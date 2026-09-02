@@ -56,68 +56,94 @@ function initTooltips() {
     document.body.appendChild(tip);
 
     const canHover = window.matchMedia('(hover: hover)').matches;
+    const HOVER_DELAY = 1500;   // deliberate hover, not a passing cursor
+    const AUTO_HIDE = 5000;     // taps have no mouseleave, so they time out
     let openRow = null;
     let timer = null;
+    let dismiss = null;
 
-    function show(row) {
-        const text = row.dataset.tip;
-        if (!text) return;
-        tip.textContent = text;
-        tip.classList.add('show');
-
-        const r = row.getBoundingClientRect();
-        const t = tip.getBoundingClientRect();
-        let top = r.top - t.height - 10;
-        if (top < 12) top = r.bottom + 10;
-        let left = Math.min(r.left, window.innerWidth - t.width - 12);
-        if (left < 12) left = 12;
-        tip.style.top = top + 'px';
-        tip.style.left = left + 'px';
-
-        row.setAttribute('aria-describedby', 'tip');
-        const btn = row.querySelector('.q-help');
-        if (btn) btn.setAttribute('aria-expanded', 'true');
-        openRow = row;
+    // drops the aria wiring for whatever row is currently described. without
+    // this, moving between two ? buttons leaves the first one lit for good.
+    function release() {
+        if (!openRow) return;
+        openRow.removeAttribute('aria-describedby');
+        const btn = openRow.querySelector('.q-help');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+        openRow = null;
     }
 
     function hide() {
         clearTimeout(timer);
+        clearTimeout(dismiss);
         tip.classList.remove('show');
-        if (openRow) {
-            openRow.removeAttribute('aria-describedby');
-            const btn = openRow.querySelector('.q-help');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-            openRow = null;
-        }
+        release();
+    }
+
+    function show(row, timeout) {
+        const text = row.dataset.tip;
+        if (!text) return;
+        release();
+        clearTimeout(dismiss);
+
+        tip.textContent = text;
+        tip.classList.add('show');
+
+        // anchor to the ?, not the row. offsetWidth ignores the entrance
+        // transform, which getBoundingClientRect would fold into the size.
+        const btn = row.querySelector('.q-help');
+        const a = (btn || row).getBoundingClientRect();
+        const w = tip.offsetWidth;
+        const h = tip.offsetHeight;
+
+        // right edge lines up with the ?, so the question text stays readable
+        let left = Math.min(a.right - w, window.innerWidth - w - 10);
+        if (left < 10) left = 10;
+
+        let top = a.top - h - 9;
+        const below = top < 10;
+        if (below) top = a.bottom + 9;
+        tip.classList.toggle('below', below);
+
+        // caret points back at the ?, clamped clear of the rounded corners
+        tip.style.setProperty('--caret',
+            Math.min(Math.max(a.left + a.width / 2 - left, 11), w - 11) + 'px');
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+
+        row.setAttribute('aria-describedby', 'tip');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        openRow = row;
+
+        if (timeout) dismiss = setTimeout(hide, AUTO_HIDE);
     }
 
     document.querySelectorAll('.q').forEach(row => {
+        const btn = row.querySelector('.q-help');
+
         if (canHover) {
-            // short delay so it doesn't strobe while you scan down the list
             row.addEventListener('mouseenter', () => {
                 clearTimeout(timer);
-                timer = setTimeout(() => show(row), 120);
+                timer = setTimeout(() => show(row), HOVER_DELAY);
             });
             row.addEventListener('mouseleave', hide);
-            // instant on the ? itself
-            const help = row.querySelector('.q-help');
-            if (help) help.addEventListener('mouseenter', () => {
+            // the ? is the shortcut past the wait
+            if (btn) btn.addEventListener('mouseenter', () => {
                 clearTimeout(timer);
                 show(row);
             });
         }
-        const btn = row.querySelector('.q-help');
+
         if (!btn) return;
         btn.setAttribute('aria-expanded', 'false');
-        // pointerdown, not click. ios makes the first tap on anything with a
-        // :hover rule a hover-only tap and swallows the click, so click needs
-        // two taps. pointerdown fires on the first one every time.
+        // pointerdown, not click. ios treats the first tap on anything with a
+        // :hover rule as hover-only and swallows the click, so click needs two
+        // taps. pointerdown fires on the first one every time.
         btn.addEventListener('pointerdown', e => {
             e.preventDefault();
             e.stopPropagation();
             // a mouse already has it from hover, so clicking must not take it away
             if (e.pointerType === 'mouse') return show(row);
-            openRow === row ? hide() : show(row);
+            openRow === row ? hide() : show(row, true);
         });
         // swallow the click that follows so it can't re-toggle or bubble out
         btn.addEventListener('click', e => {
@@ -133,8 +159,9 @@ function initTooltips() {
 
     window.addEventListener('scroll', hide, { passive: true });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-    document.addEventListener('click', e => {
-        if (openRow && !openRow.contains(e.target)) hide();
+    // any tap that is not the open row's own ? closes it, including this row's label
+    document.addEventListener('pointerdown', e => {
+        if (openRow && !e.target.closest('.q-help')) hide();
     });
 }
 

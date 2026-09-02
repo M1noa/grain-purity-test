@@ -357,36 +357,72 @@ footer p { color: var(--text-muted); font-size: 0.9rem; }
 }
 
 /* ---------- tooltip ---------- */
-/* a hint, not a paragraph. sized to sit beside a row without covering it. */
+/* a hint, not a paragraph. right-aligned to the ? it belongs to, so it lands
+   over the empty end of the row instead of the question you are reading. */
 #tip {
     position: fixed;
     z-index: 40;
-    max-width: min(240px, calc(100vw - 24px));
-    padding: 0.3rem 0.5rem;
+    max-width: min(250px, calc(100vw - 28px));
+    padding: 0.34rem 0.55rem;
     border: 1px solid var(--hover-border);
-    border-radius: 5px;
+    border-radius: 6px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
-        rgba(0, 0, 0, 0.9);
+        rgba(8, 7, 10, 0.94);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        0 6px 18px rgba(0, 0, 0, 0.5);
+        inset 0 1px 0 rgba(255, 255, 255, 0.055),
+        0 8px 22px rgba(0, 0, 0, 0.55);
     color: var(--text);
     font-size: 0.76rem;
-    line-height: 1.35;
-    text-wrap: balance;
+    line-height: 1.4;
+    text-align: left;
+    text-wrap: pretty;
     pointer-events: none;
     opacity: 0;
-    transform: translateY(3px) scale(0.98);
-    transform-origin: 0 100%;
+    transform: translateY(3px) scale(0.97);
+    transform-origin: calc(var(--caret, 50%)) 100%;
     transition:
         opacity 0.14s var(--ease-snappy),
-        transform 0.2s var(--ease-polish);
+        transform 0.22s var(--ease-polish);
 }
 
-#tip.show { opacity: 1; transform: translateY(0) scale(1); }
+/* the caret. a rotated square borrowing two of the panel's borders, so it
+   reads as one shape rather than a triangle stuck on the side. */
+#tip::after {
+    content: '';
+    position: absolute;
+    left: var(--caret, 50%);
+    bottom: -4.5px;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border: 1px solid var(--hover-border);
+    border-top: 0;
+    border-left: 0;
+    border-bottom-right-radius: 2px;
+    background: rgba(8, 7, 10, 0.94);
+    transform: rotate(45deg);
+}
+
+#tip.below {
+    transform: translateY(-3px) scale(0.97);
+    transform-origin: calc(var(--caret, 50%)) 0;
+}
+
+#tip.below::after {
+    bottom: auto;
+    top: -4.5px;
+    border: 1px solid var(--hover-border);
+    border-bottom: 0;
+    border-right: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 2px;
+}
+
+#tip.show,
+#tip.below.show { opacity: 1; transform: translateY(0) scale(1); }
 
 /* ---------- sticky bar ---------- */
 .bar {
@@ -742,6 +778,8 @@ summary:focus-visible {
     .result-actions .btn { width: 100%; }
 
     .cat-name { width: 9ch; font-size: 0.75rem; }
+
+    #tip { max-width: min(220px, calc(100vw - 20px)); font-size: 0.74rem; }
 
     footer {
         flex-direction: column;
