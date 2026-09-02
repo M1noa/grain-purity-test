@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>expanded purity test | weighted, fully local</title>
+
+    <meta name="description" content="The longer purity test: every question weighted by severity, with a category breakdown. Scored entirely in your browser, nothing leaves the page.">
+    <meta name="author" content="M1noa">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="rgb(255, 192, 203)">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://grain.minoa.cat/expanded">
+    <meta property="og:title" content="expanded grain purity test">
+    <meta property="og:description" content="The longer purity test: weighted questions and a category breakdown, scored entirely in your browser.">
+    <meta property="og:site_name" content="grain.minoa.cat">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="expanded grain purity test">
+    <meta name="twitter:description" content="The longer purity test: weighted questions and a category breakdown.">
+    <meta name="twitter:creator" content="@M1noa">
+    <meta name="twitter:site" content="@M1noa">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="grain">
+    <meta name="application-name" content="grain">
+
+    <link rel="canonical" href="https://grain.minoa.cat/expanded">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&family=Sora:wght@400;500;600;700&family=Geist+Mono:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "expanded purity test",
+        "url": "https://grain.minoa.cat/expanded",
+        "applicationCategory": "EntertainmentApplication",
+        "operatingSystem": "Any browser",
+        "browserRequirements": "Requires JavaScript.",
+        "isAccessibleForFree": true,
+        "inLanguage": "en",
+        "description": "A longer purity test with severity-weighted questions and a per-category breakdown, scored entirely in your browser.",
+        "author": { "@type": "Person", "name": "M1noa", "url": "https://minoa.cat" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "isPartOf": { "@type": "WebSite", "name": "grain.minoa.cat", "url": "https://grain.minoa.cat/" }
+    }
+    </script>
+
+    <script src="common.js"></script>
+    <script defer src="expanded-questions.js"></script>
+    <script defer src="expanded.js"></script>
+</head>
+<body>
+<div class="noise-bg"></div>
+
+<div class="container">
+    <header>
+        <h1>expanded test</h1>
+        <p><span class="js-count">More</span> questions, weighted by how much each one actually costs.</p>
+    </header>
+
+    <div class="test">
+        <noscript><p class="hint">This one is built from a question list at load, so it needs JavaScript. The <a href="/">original 100</a> works without it.</p></noscript>
+        <ol class="qlist"></ol>
+    </div>
+
+    <section class="result" hidden>
+        <div class="result-label">grain purity test score</div>
+        <div class="result-score">100</div>
+        <div class="result-band"></div>
+        <p class="result-blurb"></p>
+
+        <div class="cats"></div>
+
+        <details class="scoring">
+            <summary>how this is scored</summary>
+            <p>Every question carries a weight: <code>0.4</code> trivial, <code>0.8</code> mild, <code>1.5</code> notable, <code>2.5</code> heavy, <code>4</code> extreme. Your score is <code>100 − round(100 × checked weight ÷ total weight)</code>, so checking one extreme item costs about ten times what a trivial one does. Category bars run the same maths over just that category.</p>
+        </details>
+
+        <div class="result-actions">
+            <a class="btn" href="/">Back to the classic test</a>
+            <button class="btn btn-quiet js-reset" type="button">Start over</button>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Want the original?</h2>
+        <p>the classic 100, one point each, scores comparable with everyone else's.</p>
+        <a class="btn" href="/">Take the classic test →</a>
+    </section>
+</div>
+
+<div class="bar" hidden>
+    <div class="bar-progress"></div>
+    <div class="bar-inner">
+        <span class="bar-score">100</span>
+        <span class="bar-meta">0 selected</span>
+        <button class="btn btn-quiet js-reset" type="button">Reset</button>
+        <button class="btn js-submit" type="button">See score</button>
+    </div>
+</div>
+
+<footer>
+    <a class="footer-link" href="https://gitlab.com/M1noa/grain-purity-test" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" height="1em" width="1em" aria-hidden="true"><path d="M23.955 13.587l-1.342-4.135-2.664-8.189a.455.455 0 0 0-.867 0L16.418 9.45H7.582L4.918 1.263a.455.455 0 0 0-.867 0L1.386 9.452.044 13.587a.924.924 0 0 0 .331 1.023L12 23.054l11.625-8.443a.92.92 0 0 0 .33-1.024"></path></svg>
+        <span>GitLab</span>
+    </a>
+</footer>
+</body>
+</html>
