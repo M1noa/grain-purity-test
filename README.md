@@ -11,7 +11,7 @@ Two tests:
 - **`/`** the classic 100 questions, one point each, so scores stay comparable with everyone else's
 - **`/expanded`** 169 questions weighted by severity, with a per-category breakdown
 
-Both add a hover hint per question, drawing the boundary the question leaves open, with a `?` button so touch users get them too.
+Every question carries a hint for the part it leaves ambiguous. "Been on a date?" → *However badly it went.* Hover the row, or tap the `?` on touch.
 
 ## Running it
 
@@ -46,16 +46,16 @@ Weight tiers, pick the nearest:
 | `0.8` | mild | kissing, masturbated, a cigarette, most kink |
 | `1.5` | notable | oral, intercourse, been drunk, weed, shoplifting |
 | `2.5` | heavy | group sex, arrested, cocaine, cheating, the extreme kink |
-| `4` | extreme | needles, opioids, arson, animal contact, breaking a limit |
+| `4` | extreme | injecting, opioids, arson, animal contact, breaking a limit |
 | `5` | criminal | deepfakes, revenge porn, covert filming, armed threats |
 | `6` | felonious | rape, grooming, incest with a parent, a corpse |
 
-Any number works. Those are the seven the on-page explainer names.
+Any number works; these seven are what the 169 questions actually use.
 
 Five rules keep the ladder consistent across categories:
 
 1. **Harm to someone else** is what pushes a weight up. An act that hurts nobody stays low however unusual it sounds.
-2. **Things you chose beat things that happened to you.** Being robbed, catching an STI, having your nudes leaked: all near the floor.
+2. **Things you chose beat things that happened to you.** Catching an STI, or having a nude passed around: both near the floor.
 3. **Doing beats watching.** An act always outweighs footage of that act.
 4. **Consensual kink caps at 2.5**, however extreme. The one `4` in that category is breaking a negotiated limit, because it is the only entry there with a victim.
 5. **Umbrella first, specifics as top-ups.** "contact with a family member" carries the `4`; "with a sibling" adds `1.5` on top. Otherwise one relationship gets billed three times over.
@@ -64,7 +64,7 @@ Five rules keep the ladder consistent across categories:
 - **Remove one:** delete the line. Numbering is CSS counters, so there is nothing to renumber.
 - **New category:** just use a new `c` value. Its bar appears on the result page on its own, in the order it first shows up in the array.
 
-Scoring is `100 - round(100 * checked weight / total weight)`, run over the whole list for the headline number and over one category at a time for each bar.
+Scoring is `100 - 100 * checked weight / total weight`. The headline number keeps two decimals, so a single `0.4` item still moves it. Category bars run the same sum over one category and round to integers.
 
 ## Files
 
@@ -79,8 +79,10 @@ style.css               shared
 404.html
 _headers                security headers, incl. the CSP that blocks network calls
 noise.png               film grain overlay
-fonts/                  three self-hosted woff2 subsets, 160K total
+fonts/                  three self-hosted woff2 subsets, 152K total
+manifest.json           installable to a home screen. no service worker
 og.jpg og-expanded.jpg  1200x630 share cards
+icon-192.png icon-512.png
 ```
 
 ## Deploy
