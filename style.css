@@ -599,6 +599,12 @@ footer p { color: var(--text-muted); font-size: 0.9rem; }
     margin-top: 0.5rem;
 }
 
+.result-scale {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.9rem;
+}
+
 .result-note {
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -616,10 +622,40 @@ footer p { color: var(--text-muted); font-size: 0.9rem; }
 }
 
 /* category bars */
-.cats {
+.cats-head {
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
+    text-align: left;
+}
+
+.cats-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.cats-note {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* endpoints of the scale. borrows the .cat row so it lines up with the tracks */
+.cats-axis { margin-top: 1.1rem; }
+
+.cats-axis-scale {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+.cats {
+    margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
@@ -778,6 +814,7 @@ summary:focus-visible {
     .result-actions .btn { width: 100%; }
 
     .cat-name { width: 9ch; font-size: 0.75rem; }
+    .cats-axis-scale { font-size: 0.62rem; }
 
     #tip { max-width: min(220px, calc(100vw - 20px)); font-size: 0.74rem; }
 
@@ -820,7 +857,8 @@ summary:focus-visible {
 
     .result { padding: 1.5rem 1.25rem; }
     .result-score { font-size: clamp(2.75rem, 11vh, 4.5rem); }
-    .cats { margin-top: 1.25rem; padding-top: 1rem; }
+    .cats-head { margin-top: 1.25rem; padding-top: 1rem; }
+    .cats { margin-top: 0.8rem; }
     .result-actions { margin-top: 1.25rem; }
 
     /* a fixed tooltip has nowhere to go in 400px of height */

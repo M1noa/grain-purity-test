@@ -71,7 +71,7 @@
 <div class="container">
     <header>
         <h1>grain purity test</h1>
-        <p><span class="js-count">More</span> questions, weighted by how much each one actually costs.</p>
+        <p><span class="js-count">More</span> questions, weighted by how much each one actually costs. You start at 100 and work down.</p>
     </header>
 
     <div class="test">
@@ -84,13 +84,24 @@
         <div class="result-score"><span class="result-num">100</span><span class="result-frac"></span></div>
         <div class="result-band"></div>
         <p class="result-blurb"></p>
+        <p class="result-scale">Everyone starts at 100 and loses points. Heavier questions cost more, so a high score means you checked few boxes, or only light ones.</p>
 
+        <div class="cats-head">
+            <h2 class="cats-title">Purity by category</h2>
+            <p class="cats-note">Each bar is its own score out of 100, read the same way as the big number.</p>
+            <div class="cat cats-axis" aria-hidden="true">
+                <span class="cat-name"></span>
+                <span class="cats-axis-scale"><span>0 · checked it all</span><span>100 · untouched</span></span>
+                <span class="cat-val"></span>
+            </div>
+        </div>
         <div class="cats"></div>
 
         <details class="scoring">
             <summary>how this is scored</summary>
             <p><code>100 − 100 × checked weight ÷ total weight</code>. Bars run the same sum per category.</p>
             <p>Weight is based on the question, on a <code>0.4</code> to <code>6</code> ladder. Consensual kink caps at <code>2.5</code>.</p>
+            <p>So a single heavy question drops the score further than several light ones, and no category is scored against any other.</p>
         </details>
 
         <div class="result-actions">
