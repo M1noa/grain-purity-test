@@ -109,12 +109,22 @@ function initTooltips() {
         const btn = row.querySelector('.q-help');
         if (!btn) return;
         btn.setAttribute('aria-expanded', 'false');
+        // pointerdown, not click. ios makes the first tap on anything with a
+        // :hover rule a hover-only tap and swallows the click, so click needs
+        // two taps. pointerdown fires on the first one every time.
+        btn.addEventListener('pointerdown', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            // a mouse already has it from hover, so clicking must not take it away
+            if (e.pointerType === 'mouse') return show(row);
+            openRow === row ? hide() : show(row);
+        });
+        // swallow the click that follows so it can't re-toggle or bubble out
         btn.addEventListener('click', e => {
             e.preventDefault();
             e.stopPropagation();
-            openRow === row ? hide() : show(row);
         });
-        // keyboard only. on a mouse click focus would fight the toggle above
+        // keyboard only. preventDefault above means taps never focus the button
         btn.addEventListener('focus', () => {
             if (btn.matches(':focus-visible')) show(row);
         });
@@ -128,13 +138,31 @@ function initTooltips() {
     });
 }
 
+// ---------- fractional scores ----------
+// weighted scoring lands between integers. show the whole part at full size and
+// hang the remainder off the side, so the big number never shifts as you tick.
+function paintScore(numEl, fracEl, out) {
+    if (!fracEl || out.raw === undefined) {
+        numEl.textContent = out.score;
+        return;
+    }
+    const v = Math.round(out.raw * 100) / 100;   // 87.999 rolls to a clean 88
+    const whole = Math.floor(v);
+    const d = Math.round((v - whole) * 100);
+    numEl.textContent = whole;
+    fracEl.textContent = d ? '.' + (d % 10 ? d : d / 10) : '';
+    fracEl.classList.toggle('show', !!d);
+}
+
 // ---------- test wiring ----------
-// compute(rows) must return { score, cats? } where cats is [[name, 0-100], ...]
+// compute(rows) must return { score, raw?, cats? }, cats is [[name, 0-100], ...]
 function grainTest(compute) {
     const list = document.querySelector('.qlist');
     const rows = [...list.querySelectorAll('.q')];
     const bar = document.querySelector('.bar');
-    const barScore = document.querySelector('.bar-score');
+    // .bar-num exists only where the score can be fractional (expanded)
+    const barScore = document.querySelector('.bar-num') || document.querySelector('.bar-score');
+    const barFrac = document.querySelector('.bar-frac');
     const barMeta = document.querySelector('.bar-meta');
     const barFill = document.querySelector('.bar-progress');
     const result = document.querySelector('.result');
@@ -147,7 +175,7 @@ function grainTest(compute) {
 
     function live() {
         const n = rows.filter(r => r.querySelector('input').checked).length;
-        barScore.textContent = compute(rows).score;
+        paintScore(barScore, barFrac, compute(rows));
         barMeta.textContent = n === 1 ? '1 selected' : n + ' selected';
     }
 
@@ -170,11 +198,15 @@ function grainTest(compute) {
     window.addEventListener('scroll', queueProgress, { passive: true });
     window.addEventListener('resize', queueProgress);
 
+    const resScore = result.querySelector('.result-num') || result.querySelector('.result-score');
+    const resFrac = result.querySelector('.result-frac');
+
     document.querySelector('.js-submit').addEventListener('click', () => {
-        const { score, cats } = compute(rows);
+        const out = compute(rows);
+        const { score, cats } = out;
         const [, name, blurb] = band(score);
 
-        result.querySelector('.result-score').textContent = score;
+        paintScore(resScore, resFrac, out);
         result.querySelector('.result-band').textContent = name;
         result.querySelector('.result-blurb').textContent = blurb;
 

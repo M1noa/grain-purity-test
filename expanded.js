@@ -24,10 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const weight = rs => rs.reduce((s, r) => s + Number(r.dataset.w), 0);
     const checked = rs => rs.filter(r => r.querySelector('input').checked);
-    const purity = rs => rs.length ? 100 - Math.round(100 * weight(checked(rs)) / weight(rs)) : 100;
+    const raw = rs => rs.length ? 100 - 100 * weight(checked(rs)) / weight(rs) : 100;
+    const purity = rs => Math.round(raw(rs));
 
     grainTest(rows => ({
         score: purity(rows),
+        raw: raw(rows),
         cats: cats.map(c => [c, purity(rows.filter(r => r.dataset.c === c))])
     }));
 });
