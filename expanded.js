@@ -31,5 +31,5 @@ document.addEventListener('DOMContentLoaded', () => {
         score: purity(rows),
         raw: raw(rows),
         cats: cats.map(c => [c, purity(rows.filter(r => r.dataset.c === c))])
-    }));
+    }), BANDS_WEIGHTED);
 });

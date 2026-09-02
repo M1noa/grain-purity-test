@@ -33,19 +33,45 @@
 })();
 
 // ---------- score bands ----------
-const BANDS = [
+// the two tests do NOT share thresholds, because they do not share a scale.
+// modelling the same three people through both: a barely-started profile scores
+// 96 weighted but 87 flat, a typical experienced one 80 weighted but 41 flat,
+// and a heavy one 58 weighted but 20 flat. one table across both would tell the
+// flat-test taker they are near the floor when they are near the middle.
+
+// expanded. 45% of its weight sits in forty items about crime, incest and
+// non-consent, so ticking every other question on the list only reaches 43.
+// that is why the bottom two sit where they do: 'committed' is the honest floor
+// for someone with no crimes ticked, 'how' is below it. re-measure if that tail
+// ever changes weight much.
+const BANDS_WEIGHTED = [
     [100, 'untouched',      'nothing checked. genuinely impressive or genuinely lying.'],
-    [95,  'barely dented',  'a couple of firsts and not much else.'],
-    [85,  'curious',        'you have started, cautiously.'],
-    [70,  'standard issue', 'right about where most people land.'],
-    [50,  'experienced',    'you have been around a bit.'],
-    [30,  'well travelled', 'a solid catalogue of decisions.'],
-    [15,  'committed',      'not much left on the list.'],
+    [93,  'barely dented',  'a couple of firsts and not much else.'],
+    [84,  'curious',        'you have started, and you are not in a hurry.'],
+    [72,  'about average',  'right about where most people land.'],
+    [62,  'experienced',    'past average, and you knew that.'],
+    [53,  'well travelled', 'a solid catalogue of decisions.'],
+    [42,  'committed',      'close to everything on here that is not a crime.'],
+    [0,   'how',            'you had to reach into the felonies for this.']
+];
+
+// classic. one point per item, nothing locked away, so the same life spends far
+// more of the scale and the whole ladder shifts down. lower is the norm here,
+// which is also what the original test's scores have always looked like.
+const BANDS_FLAT = [
+    [100, 'untouched',      'nothing checked. genuinely impressive or genuinely lying.'],
+    [90,  'barely dented',  'a couple of firsts and not much else.'],
+    [75,  'curious',        'you have started, and you are not in a hurry.'],
+    [55,  'above average',  'purer than most people who take this.'],
+    [34,  'about average',  'right about where most people land.'],
+    [22,  'experienced',    'past average, and you knew that.'],
+    [10,  'well travelled', 'a solid catalogue of decisions.'],
     [0,   'how',            'you should probably write a book.']
 ];
 
-function band(score) {
-    return BANDS.find(b => score >= b[0]) || BANDS[BANDS.length - 1];
+function band(score, bands) {
+    const b = bands || BANDS_WEIGHTED;
+    return b.find(x => score >= x[0]) || b[b.length - 1];
 }
 
 // ---------- tooltips ----------
@@ -183,7 +209,8 @@ function paintScore(numEl, fracEl, out) {
 
 // ---------- test wiring ----------
 // compute(rows) must return { score, raw?, cats? }, cats is [[name, 0-100], ...]
-function grainTest(compute) {
+// bands picks the threshold table: BANDS_FLAT for classic, BANDS_WEIGHTED for expanded
+function grainTest(compute, bands) {
     const list = document.querySelector('.qlist');
     const rows = [...list.querySelectorAll('.q')];
     const bar = document.querySelector('.bar');
@@ -231,7 +258,7 @@ function grainTest(compute) {
     document.querySelector('.js-submit').addEventListener('click', () => {
         const out = compute(rows);
         const { score, cats } = out;
-        const [, name, blurb] = band(score);
+        const [, name, blurb] = band(score, bands);
 
         paintScore(resScore, resFrac, out);
         result.querySelector('.result-band').textContent = name;
